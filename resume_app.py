@@ -6,9 +6,17 @@ from sentence_transformers import SentenceTransformer, util
 from io import BytesIO
 from pdfminer.high_level import extract_text
 from docx2txt import process as docx_process
+import os
+
+# Ensure spaCy model is available
+def load_spacy_model():
+    model_name = "en_core_web_sm"
+    if not spacy.util.is_package(model_name):
+        os.system(f"python -m spacy download {model_name}")
+    return spacy.load(model_name)
 
 # Load NLP Model
-nlp = spacy.load("en_core_web_sm")
+nlp = load_spacy_model()
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Function to extract text from PDF
