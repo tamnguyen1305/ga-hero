@@ -1,22 +1,16 @@
 import PyPDF2
 import pandas as pd
 import spacy
-import streamlit as st
+from flask import Flask, request, jsonify, send_file
 from sentence_transformers import SentenceTransformer, util
 from io import BytesIO
 from pdfminer.high_level import extract_text
 from docx2txt import process as docx_process
-import os
 
-# Ensure spaCy model is available
-def load_spacy_model():
-    model_name = "en_core_web_sm"
-    if not spacy.util.is_package(model_name):
-        os.system(f"python -m spacy download {model_name}")
-    return spacy.load(model_name)
+app = Flask(__name__)
 
 # Load NLP Model
-nlp = load_spacy_model()
+nlp = spacy.load("en_core_web_sm")
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Function to extract text from PDF
@@ -37,15 +31,13 @@ def match_criteria(cv_text, criteria_list):
         scores.append(similarity)
     return scores
 
-# Streamlit UI
-st.title("AI-Powered Resume Evaluator")
-st.write("Upload a CV and an evaluation grid to assess candidate suitability.")
-
-cv_file = st.file_uploader("Upload CV (PDF)", type=["pdf"])
-grid_file = st.file_uploader("Upload Evaluation Grid (DOCX)", type=["docx"])
-
-if cv_file and grid_file:
-    st.write("Processing...")
+@app.route('/evaluate', methods=['POST'])
+def evaluate():
+    if 'cv' not in request.files or 'grid' not in request.files:
+        return jsonify({"error": "Please upload both CV and evaluation grid."}), 400
+    
+    cv_file = request.files['cv']
+    grid_file = request.files['grid']
     
     cv_text = extract_text_from_pdf(cv_file)
     grid_text = extract_text_from_docx(grid_file)
@@ -66,12 +58,11 @@ if cv_file and grid_file:
         "Score": rated_results
     })
     
-    st.write("### Evaluation Results")
-    st.dataframe(df)
-    
     output = BytesIO()
     df.to_excel(output, index=False, engine='xlsxwriter')
     output.seek(0)
-    st.download_button(label="Download Results as Excel", data=output, file_name="cv_evaluation.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
-    st.success("Evaluation complete! Download your results above.")
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name='cv_evaluation.xlsx')
+
+if __name__ == '__main__':
+    app.run(debug=True)
