@@ -7,8 +7,18 @@ from io import BytesIO
 from pdfminer.high_level import extract_text
 from docx2txt import process as docx_process
 
+# Ensure spaCy model is available
+def load_spacy_model():
+    try:
+        return spacy.load("en_core_web_sm")
+    except OSError:
+        st.warning("Downloading missing spaCy model... (This may take a minute)")
+        from spacy.cli import download
+        download("en_core_web_sm")
+        return spacy.load("en_core_web_sm")
+
 # Load NLP Model
-nlp = spacy.load("en_core_web_sm")
+nlp = load_spacy_model()
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Function to extract text from PDF
