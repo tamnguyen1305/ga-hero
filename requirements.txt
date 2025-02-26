@@ -1,10 +1,8 @@
-streamlit
+flask
 pandas
 spacy
-spacy-lookups-data
 sentence-transformers
-PyPDF2
 pdfminer.six
 docx2txt
 xlsxwriter
-git+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz
+gunicorn
