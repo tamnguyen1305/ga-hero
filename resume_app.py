@@ -6,18 +6,6 @@ from sentence_transformers import SentenceTransformer, util
 from io import BytesIO
 from pdfminer.high_level import extract_text
 from docx2txt import process as docx_process
-import subprocess
-import sys
-
-# Ensure spaCy model is installed
-def ensure_spacy_model():
-    try:
-        spacy.load("en_core_web_sm")
-    except OSError:
-        st.warning("Downloading missing spaCy model... (This may take a minute)")
-        subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], check=True)
-
-ensure_spacy_model()
 
 # Load NLP Model
 nlp = spacy.load("en_core_web_sm")
