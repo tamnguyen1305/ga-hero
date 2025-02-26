@@ -5,3 +5,4 @@ sentence-transformers
 pdfminer.six
 docx2txt
 xlsxwriter
+PyPDF2
