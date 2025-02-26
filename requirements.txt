@@ -2,7 +2,6 @@ streamlit
 pandas
 spacy
 spacy-lookups-data
-en-core-web-sm
 sentence-transformers
 PyPDF2
 pdfminer.six
