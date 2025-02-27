@@ -6,3 +6,4 @@ pdfminer.six
 docx2txt
 xlsxwriter
 gunicorn
+PyPDF2
